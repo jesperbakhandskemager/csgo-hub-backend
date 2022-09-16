@@ -1,0 +1,7 @@
+config:
+  MYSQL_DB: "cshub"
+  MYSQL_USER: "root"
+  MYSQL_PASS: ""
+  MYSQL_HOST: "127.0.0.1:3306"
+  DOMAIN: "steam.csgohub.xyz"
+  PORT: ":8383"
