@@ -2,7 +2,7 @@
 Use with [csgo-hub-discord](https://github.com/jesperbakhandskemager/csgo-hub-discord)
 
 ## Database
-You need the following tables
+You need the following tables in MySQL
 
 ```{sql}
 CREATE TABLE
