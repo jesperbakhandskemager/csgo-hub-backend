@@ -151,13 +151,22 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Bad request")
 		return
 	}
+	var dbToken string
+	query := `SELECT token FROM tokens where discord_id = ?`
+	_ = db.QueryRow(query, discord).Scan(&dbToken)
 
-	_, err = db.Exec(`INSERT INTO tokens(discord_id, token) VALUES (?, ?)`, discord, token)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "Bad request")
-		return
+	if dbToken != "" {
+		token = dbToken
+	}
+
+	if token != dbToken {
+		_, err = db.Exec(`INSERT INTO tokens(discord_id, token) VALUES (?, ?)`, discord, token)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Bad request")
+			return
+		}
 	}
 
 	json.NewEncoder(w).Encode(token)
