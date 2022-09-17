@@ -1,19 +1,32 @@
 <html>
-  <head><title>Steam OpenID</title></head>
-  <style>body{font-family: Inter, Avenir, Helvetica, Arial, sans-serif;font-size: 16px;line-height: 24px;font-weight: 400;color-scheme: light dark;color: rgba(255, 255, 255, 0.87);background-color: #242424;font-synthesis: none;text-rendering: optimizeLegibility;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;-webkit-text-size-adjust: 100%;}a {font-weight: 500;color: #646cff;text-decoration: inherit;}a:hover {color: #535bf2;}.login {margin-top: 5%;margin: 0;text-align: center;min-width: 320px;min-height: 100vh;}h1 {font-size: 3.2em;line-height: 1.1;}img {scale: 1.2;}</style>
-  <body>
-    <div class="login">
-      {{if .user}}
-      <p>{{.user}} Linked to your Discord account</p>
+
+<head>
+  <title>Steam OpenID</title>
+</head>
+<style>.login,li a{text-align:center}body{font-family:Inter,Avenir,Helvetica,Arial,sans-serif;font-size:16px;line-height:24px;font-weight:400;color-scheme:light dark;color:rgba(255,255,255,.87);background-color:#242424;font-synthesis:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-webkit-text-size-adjust:100%}a{font-weight:500;color:#646cff;text-decoration:inherit}a:hover{color:#535bf2}.login{margin:0;min-width:320px;min-height:100vh}h1{font-size:3.2em;line-height:1.1}img{scale:1.2}ul{list-style-type:none;margin:0;padding:0;overflow:hidden}li a{display:block;color:#fff;padding:14px 16px;text-decoration:none}.navbar img{border-radius:50%;scale:1.0}</style>
+
+<body>
+  {{if .DiscordName}}
+  <div class="navbar">
+    <ul>
+      <li style="float:right"><img alt="avatar" src="https://cdn.discordapp.com/avatars/{{.DiscordAvatar}}.png?size=100" width="50" height="50px"></li>
+      <li style="float:right"><a class="active" href="#">{{.DiscordName}}</a></li>
+    </ul> 
+  </div>
+<div class="login">
+  <h1>Authenticate Steam</h1>
+  <p><b>Link {{.DiscordName}} with your Steam account</b></p>
+  <br>
+  <a href="/discover">
+    <img alt="Sign in through Steam"
+      src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png" />
+  </a>
+  <div class="login">
+    {{else if .user}}
+    <p>{{.user}} Linked to your Discord account</p>
     {{else}}
-      <h1>Authenticate Steam</h1>
-      <a href="/discover">
-        <img alt="Sign in through Steam" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png" />
-      </a>
-      {{end}}
-      {{if .error}}
-      <p>An error occured</p>
-      {{end}}
-    </div>
-  </body>
+    <p>An error occured</p>
+    {{end}}
+  </div>
+</body>
 </html>

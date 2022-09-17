@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -33,23 +35,59 @@ func (n *NoOpDiscoveryCache) Get(id string) openid.DiscoveredInfo {
 var nonceStore = openid.NewSimpleNonceStore()
 var discoveryCache = &NoOpDiscoveryCache{}
 
+type IndexStruct struct {
+	DiscordName   string `json:"DiscordName"`
+	DiscordAvatar string `json:"DiscordAvatar"`
+}
+
+type DiscordUser struct {
+	Id               string `json:"id"`
+	Username         string `json:"username"`
+	Avatar           string `json:"avatar"`
+	AvatarDecoration string `json:"avatar_decoration"`
+	Discriminator    string `json:"discriminator"`
+	PublicFlags      int    `json:"public_flags"`
+	Banner           string `json:"banner"`
+	BannerColor      string `json:"banner_color"`
+	AccentColor      string `json:"accent_color"`
+}
+
 // indexHandler serves up the index template with the "Sign in through STEAM" button.
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	token := vars["token"]
-	query := `SELECT token FROM tokens where token = BINARY ?`
-	err := db.QueryRow(query, token).Scan(&token)
+	var discordId string
+	query := `SELECT discord_id, token FROM tokens where token = BINARY ?`
+	err := db.QueryRow(query, token).Scan(&discordId, &token)
 	if err != nil {
 		log.Print(err)
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Bad request")
 		return
 	}
+	// 959336363172442152/1ce1214a9540ff02cedc0acd0ad37d1f.png
+	req, err := http.NewRequest("GET", "https://discord.com/api/v9/users/"+discordId, nil)
+	req.Header.Add("Authorization", bearer)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERROR] -", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Error while reading the response bytes:", err)
+	}
+	var discord DiscordUser
+	json.Unmarshal(body, &discord)
+	tmpl := IndexStruct{DiscordName: discord.Username, DiscordAvatar: discord.Id + "/" + discord.Avatar}
 	log.Println(token)
 	expiration := time.Now().Add(time.Hour)
 	cookie := http.Cookie{Name: "token", Value: token, Expires: expiration}
 	http.SetCookie(w, &cookie)
-	indexTemplate.Execute(w, nil)
+	indexTemplate.Execute(w, tmpl)
 }
 
 // discoverHandler calls the Steam openid API and redirects to steam for login.

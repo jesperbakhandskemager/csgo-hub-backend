@@ -24,12 +24,13 @@ type YAMLFile struct {
 }
 
 type Config struct {
-	MYSQL_DB   string `yaml:"MYSQL_DB"`
-	MYSQL_USER string `yaml:"MYSQL_USER"`
-	MYSQL_PASS string `yaml:"MYSQL_PASS"`
-	MYSQL_HOST string `yaml:"MYSQL_HOST"`
-	DOMAIN     string `yaml:"DOMAIN"`
-	PORT       string `yaml:"PORT"`
+	MYSQL_DB      string `yaml:"MYSQL_DB"`
+	MYSQL_USER    string `yaml:"MYSQL_USER"`
+	MYSQL_PASS    string `yaml:"MYSQL_PASS"`
+	MYSQL_HOST    string `yaml:"MYSQL_HOST"`
+	DOMAIN        string `yaml:"DOMAIN"`
+	PORT          string `yaml:"PORT"`
+	DISCORD_TOKEN string `yaml:"DISCORD_TOKEN"`
 }
 
 func ReadConfig() (*Config, error) {
@@ -176,6 +177,8 @@ func GenerateRandomString(n int) (string, error) {
 	return string(ret), nil
 }
 
+var bearer string
+
 var db *sql.DB
 
 func main() {
@@ -197,6 +200,8 @@ func main() {
 	}
 	defer db.Close()
 	log.Println("Database connection established")
+
+	bearer = "Bot " + config.DISCORD_TOKEN
 
 	router := mux.NewRouter()
 
