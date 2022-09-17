@@ -5,3 +5,4 @@ config:
   MYSQL_HOST: "127.0.0.1:3306"
   DOMAIN: "steam.csgohub.xyz"
   PORT: ":8383"
+  DISCORD_TOKEN: ""
