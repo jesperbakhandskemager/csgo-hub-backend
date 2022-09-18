@@ -66,7 +66,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// 959336363172442152/1ce1214a9540ff02cedc0acd0ad37d1f.png
-	req, err := http.NewRequest("GET", "https://discord.com/api/v9/users/"+discordId, nil)
+	req, _ := http.NewRequest("GET", "https://discord.com/api/v9/users/"+discordId, nil)
 	req.Header.Add("Authorization", bearer)
 
 	client := &http.Client{}
@@ -82,7 +82,13 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	var discord DiscordUser
 	json.Unmarshal(body, &discord)
-	tmpl := IndexStruct{DiscordName: discord.Username, DiscordAvatar: discord.Id + "/" + discord.Avatar}
+	var discordAvatarURL string
+	if discord.Avatar == "" {
+		discordAvatarURL = "https://csgohub.xyz/assets/empty-avatar.png"
+	} else {
+		discordAvatarURL = "https://cdn.discordapp.com/avatars/" + discord.Id + "/" + discord.Avatar + ".png?size=100"
+	}
+	tmpl := IndexStruct{DiscordName: discord.Username, DiscordAvatar: discordAvatarURL}
 	log.Println(token)
 	expiration := time.Now().Add(time.Hour)
 	cookie := http.Cookie{Name: "token", Value: token, Expires: expiration}
