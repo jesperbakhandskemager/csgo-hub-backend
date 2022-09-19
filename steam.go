@@ -16,9 +16,8 @@ import (
 	"github.com/yohcop/openid-go"
 )
 
-// Load the templates once
-var templateDir = "./"
-var indexTemplate = template.Must(template.ParseFiles(templateDir + "index.html"))
+var authenticateTmpl = template.Must(template.ParseFiles("./sites/authenticate.html"))
+var successTmpl = template.Must(template.ParseFiles("./sites/success.html"))
 
 // NoOpDiscoveryCache implements the DiscoveryCache interface and doesn't cache anything.
 // For a simple website, I'm not sure you need a cache.
@@ -38,6 +37,11 @@ var discoveryCache = &NoOpDiscoveryCache{}
 type IndexStruct struct {
 	DiscordName   string `json:"DiscordName"`
 	DiscordAvatar string `json:"DiscordAvatar"`
+}
+type SuccessStruct struct {
+	DiscordName   string `json:"DiscordName"`
+	DiscordAvatar string `json:"DiscordAvatar"`
+	Status        string `json:"Status"`
 }
 
 type DiscordUser struct {
@@ -93,7 +97,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	expiration := time.Now().Add(time.Hour)
 	cookie := http.Cookie{Name: "token", Value: token, Expires: expiration}
 	http.SetCookie(w, &cookie)
-	indexTemplate.Execute(w, tmpl)
+	authenticateTmpl.Execute(w, tmpl)
 }
 
 // discoverHandler calls the Steam openid API and redirects to steam for login.
@@ -118,6 +122,7 @@ func ClearToken(token string) error {
 // callbackHandler handles the response back from Steam. It verifies the callback and then renders
 // the index template with the logged in user's id.
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
+	var tmpl SuccessStruct
 	fullURL := "http://" + domain + r.URL.String()
 
 	id, err := openid.Verify(fullURL, discoveryCache, nonceStore)
@@ -150,6 +155,31 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		ClearToken(token)
 
+		req, _ := http.NewRequest("GET", "https://discord.com/api/v9/users/"+discordId, nil)
+		req.Header.Add("Authorization", bearer)
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Println("Error on response.\n[ERROR] -", err)
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Println("Error while reading the response bytes:", err)
+		}
+		var discord DiscordUser
+		json.Unmarshal(body, &discord)
+		var discordAvatarURL string
+		if discord.Avatar == "" {
+			discordAvatarURL = "https://csgohub.xyz/assets/empty-avatar.png"
+		} else {
+			discordAvatarURL = "https://cdn.discordapp.com/avatars/" + discord.Id + "/" + discord.Avatar + ".png?size=100"
+		}
+		tmpl.DiscordName = discord.Username
+		tmpl.DiscordAvatar = discordAvatarURL
+
 		var checkId, checkFriend string
 		query = `SELECT discord_id, friend_code FROM users where discord_id = ?`
 		err = db.QueryRow(query, discordId).Scan(&checkId, &checkFriend)
@@ -161,8 +191,10 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "Bad request")
 			}
 			log.Print(err)
-			w.WriteHeader(http.StatusCreated)
-			fmt.Fprintf(w, "Account link updated")
+			// w.WriteHeader(http.StatusCreated)
+			// fmt.Fprintf(w, "Account link updated")
+			tmpl.Status = "Account link updated"
+			successTmpl.Execute(w, tmpl)
 			return
 		}
 
@@ -171,10 +203,12 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "Bad request")
+			return
 		}
+		tmpl.Status = "Account linked"
 
 		w.WriteHeader(http.StatusCreated)
 		data["user"] = id
-		indexTemplate.Execute(w, data)
+		successTmpl.Execute(w, tmpl)
 	}
 }

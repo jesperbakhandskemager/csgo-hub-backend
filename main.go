@@ -218,7 +218,7 @@ func main() {
 	router.HandleFunc("/discover", discoverHandler)
 	router.HandleFunc("/openidcallback", callbackHandler)
 	router.HandleFunc("/{token}", indexHandler)
-	router.Handle("/static/", (http.StripPrefix("/static", http.FileServer(http.Dir("./assets")))))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("./assets"))))
 	router.HandleFunc("/api/v1/users", GetMultipleUsers)
 	router.HandleFunc("/api/v1/token/{discord}", CreateToken)
 	http.ListenAndServe(port, router)
