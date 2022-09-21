@@ -1,0 +1,113 @@
+.steam-login,
+body {
+    -webkit-text-size-adjust: 100%
+}
+
+.navbar a,
+.steam-login {
+    text-decoration: inherit
+}
+
+.footer,
+.login,
+.steam-login,
+li a {
+    text-align: center
+}
+
+.name {
+    text-align: center;
+    text-decoration: inherit;
+    font-weight: 500;
+}
+
+.name:hover {
+    color: #535bf2;
+}
+
+body {
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, .87);
+    background-color: #242424;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+h1 {
+    font-size: 3.2em;
+    line-height: 1.1
+}
+
+img {
+    scale: 1.2
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden
+}
+
+li .name {
+    display: block;
+    color: #fff;
+    padding: 14px 16px;
+    text-decoration: none
+}
+
+.navbar {
+    margin-top: 1.5rem
+}
+
+.navbar img {
+    border-radius: 50%;
+    scale: 1.0;
+    margin-right: 1.5rem
+}
+
+.steam-login {
+    vertical-align: 5rem;
+    tab-size: 4;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    box-sizing: border-box;
+    border: 1px solid #e5e7eb;
+    display: inline-block;
+    align-items: center;
+    border-radius: .375rem;
+    background-color: #1b2838;
+    color: #fff;
+    padding: .75rem 1.25rem;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 75ms
+}
+
+.steam-login:hover {
+    background-color: #4b5563
+}
+
+.steam-login svg {
+    vertical-align: -.3em;
+    margin-right: .3rem;
+    -webkit-filter: invert(100%);
+    filter: invert(100%)
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #181a1b;
+    color: #cecece
+}

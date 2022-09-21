@@ -147,7 +147,7 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	discord := vars["discord"]
-	if len(discord) != 18 {
+	if len(discord) > 21 {
 		fmt.Fprintf(w, "Bad request")
 		return
 	}
@@ -218,9 +218,8 @@ func main() {
 	router.HandleFunc("/discover", discoverHandler)
 	router.HandleFunc("/openidcallback", callbackHandler)
 	router.HandleFunc("/{token}", indexHandler)
-	// router.HandleFunc("/api/v1/user/{id}", ReturnSingleUser).Methods("GET")
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static", http.FileServer(http.Dir("./assets"))))
 	router.HandleFunc("/api/v1/users", GetMultipleUsers)
-	//router.HandleFunc("/api/v1/user", CreateUser).Methods("POST")
 	router.HandleFunc("/api/v1/token/{discord}", CreateToken)
 	http.ListenAndServe(port, router)
 }
