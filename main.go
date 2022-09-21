@@ -147,7 +147,7 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	discord := vars["discord"]
-	if len(discord) != 18 {
+	if len(discord) > 21 {
 		fmt.Fprintf(w, "Bad request")
 		return
 	}
