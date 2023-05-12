@@ -1,15 +1,13 @@
 # CS:GO Hub backend
 
 ## About
-This is the backend, which works with Steam's OpenID to gather their Steam ID and convert it to the corresponding CS:GO friend code.
+This is the backend for the CS:GO Hub bot, it works by collecting the Discord users Id upon request to link the account, the bot will respond with a custom link for the user where they will be able to link their steam by account by using Steam's OpenID system to gather their Steam ID and then converting it to the corresponding CS:GO friend code.
 It functions with the [CS:GO Hub Discord bot](https://github.com/jesperbakhandskemager/csgo-hub-discord).
 
-A user can request a token from the bot by issuing the `/link-steam` command in any server where the bot is present or in the bot's DM's.
-The bot takes note of the Discord Id, and sends it along in the token request (the endpoint can only be accessed from localhost for security).
+A user can request to link their account with the bot by issuing the `/link-steam` command in any server in which the bot is present or by executing the command in a direct message to the bot.
+The bot the bot will send the Discord Id of the user along to the backend which will respond with a custom link containing a token to identify the user.
 
-The bot responds to the user with a formatted link to the `steam.csgohub.xyz` site appended by their token, and the backend gathers various informations from both the database along with data from Discord's API.
-
-Once a user is linked, anyone can issue the `/show-team` command in any channel the server owner permits and the bot will reply with a list of friend codes for any linked users in the same voice channel.
+Once an account is linked, anyone in the same voice channel as them can issue the `/show-team` command and be presented with their CS:GO friend code along with any other accounts linked in the same VC assuning they ran the command in the same server as the voice call is in.
 
 ## Database
 You need the following tables in MySQL
@@ -31,3 +29,6 @@ CREATE TABLE
     PRIMARY KEY (`id`)
   ) ENGINE = InnoDB AUTO_INCREMENT = 6 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci
 ```
+
+## Screenshots
+![The website where a user can link their account](link-account.png)
